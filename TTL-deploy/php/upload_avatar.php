@@ -1,35 +1,36 @@
 <?php
 require_once __DIR__ . '/config.php';
 session_start();
+
+header('Content-Type: application/json; charset=utf-8');
+
 if (!isset($_SESSION['id'])) {
-    echo json_encode(["success" => false, "message" => "未登入"]);
-    exit();
+    echo json_encode(['success' => false, 'message' => 'Please log in first.']);
+    exit;
 }
 
-$userId = $_SESSION['id'];
+$conn = get_db_connection();
+$userId = (int) $_SESSION['id'];
+$upload = ttl_store_avatar_upload($conn, $_FILES['avatar'] ?? null, $userId);
 
-if ($_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
-    $tmp = $_FILES['avatar']['tmp_name'];
-    $ext = pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
-    $fileName = 'avatar_' . $userId . '.' . $ext;
-    $destination = '../Image/uploads/' . $fileName;
-
-
-    if (move_uploaded_file($tmp, $destination)) {
-        // ✅ 更新資料庫
-        $conn = get_db_connection();
-        $stmt = $conn->prepare("UPDATE users SET avatar=? WHERE id=?");
-        $stmt->bind_param("si", $fileName, $userId);
-        $stmt->execute();
-
-        // ✅ 更新 session
-        $_SESSION['avatar'] = $fileName;
-
-        echo json_encode(["success" => true, "path" => "Image/uploads/" . $fileName]);
-    } else {
-        echo json_encode(["success" => false, "message" => "儲存失敗"]);
-    }
-} else {
-    echo json_encode(["success" => false, "message" => "檔案錯誤"]);
+if (!($upload['success'] ?? false)) {
+    echo json_encode(['success' => false, 'message' => $upload['message'] ?? 'Avatar upload failed.']);
+    exit;
 }
-?>
+
+$fileName = (string) $upload['filename'];
+$stmt = $conn->prepare('UPDATE users SET avatar=? WHERE id=?');
+$stmt->bind_param('si', $fileName, $userId);
+
+if (!$stmt->execute()) {
+    echo json_encode(['success' => false, 'message' => 'Unable to update avatar.']);
+    exit;
+}
+
+$_SESSION['avatar'] = $fileName;
+
+echo json_encode([
+    'success' => true,
+    'avatar' => $fileName,
+    'path' => ttl_avatar_url($fileName),
+]);

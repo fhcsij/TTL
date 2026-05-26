@@ -1,10 +1,18 @@
+function avatarCacheBust(url) {
+  return url + (url.includes('?') ? '&t=' : '?t=') + Date.now();
+}
+
+function userAvatarSrc(data) {
+  return data.avatar_url || ('Image/uploads/' + data.avatar);
+}
+
 document.addEventListener("DOMContentLoaded", function () {
    // ✅ 取得使用者資料與頭像
   fetch('php/get_user_info.php')
     .then(res => res.json())
     .then(data => {
       document.getElementById('username').textContent = data.name;
-      document.getElementById('avatarImg').src = 'Image/uploads/' + data.avatar + '?t=' + Date.now();
+      document.getElementById('avatarImg').src = avatarCacheBust(userAvatarSrc(data));
       document.getElementById('userPoints').textContent = data.points;
     });
 
@@ -21,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(data => {
         console.log(data)
         if (data.success) {
-          document.getElementById('avatarImg').src = data.path + '?t=' + Date.now();
+          document.getElementById('avatarImg').src = avatarCacheBust(data.path);
         } else {
           alert('上傳失敗12ddw3：' + data.message);
         }

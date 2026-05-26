@@ -205,6 +205,7 @@ class TTLPostgresConnection
 {
     private PDO $pdo;
     private bool $productImagesReady = false;
+    private bool $userImagesReady = false;
     public ?string $connect_error = null;
     public int $connect_errno = 0;
     public string $error = '';
@@ -297,6 +298,27 @@ class TTLPostgresConnection
         return is_array($row) ? $row : null;
     }
 
+    public function storeUserImage(string $name, string $mime, string $base64Data): bool
+    {
+        $this->ensureUserImagesTable();
+        $statement = $this->pdo->prepare(
+            'INSERT INTO user_images (name, mime, data, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+             ON CONFLICT (name) DO UPDATE SET mime = EXCLUDED.mime, data = EXCLUDED.data, updated_at = CURRENT_TIMESTAMP'
+        );
+
+        return $statement->execute([$name, $mime, $base64Data]);
+    }
+
+    public function getUserImage(string $name): ?array
+    {
+        $this->ensureUserImagesTable();
+        $statement = $this->pdo->prepare('SELECT mime, data FROM user_images WHERE name = ?');
+        $statement->execute([$name]);
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return is_array($row) ? $row : null;
+    }
+
     private function ensureProductImagesTable(): void
     {
         if ($this->productImagesReady) {
@@ -312,6 +334,23 @@ class TTLPostgresConnection
             )'
         );
         $this->productImagesReady = true;
+    }
+
+    private function ensureUserImagesTable(): void
+    {
+        if ($this->userImagesReady) {
+            return;
+        }
+
+        $this->pdo->exec(
+            'CREATE TABLE IF NOT EXISTS user_images (
+                name varchar(255) PRIMARY KEY,
+                mime varchar(100) NOT NULL,
+                data text NOT NULL,
+                updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )'
+        );
+        $this->userImagesReady = true;
     }
 }
 
@@ -545,6 +584,27 @@ function ttl_avatar_filename(?string $filename): string
     return 'default.png';
 }
 
+function ttl_avatar_url(?string $filename, bool $cacheBust = false): string
+{
+    $rawName = trim((string) $filename);
+    if ($rawName === '') {
+        return ttl_asset_url('Image/uploads/default.png', $cacheBust);
+    }
+
+    if (preg_match('/^(https?:|data:|php\/avatar_image\.php)/i', $rawName)) {
+        return ttl_asset_url($rawName, $cacheBust);
+    }
+
+    $name = basename(str_replace('\\', '/', $rawName));
+    $relativePath = 'Image/uploads/' . $name;
+
+    if ($name !== '' && ttl_public_file_exists($relativePath)) {
+        return ttl_asset_url($relativePath, $cacheBust);
+    }
+
+    return ttl_asset_url('php/avatar_image.php?name=' . rawurlencode($name), $cacheBust);
+}
+
 function ttl_product_upload_error(?array $file): ?string
 {
     if ($file === null || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
@@ -591,6 +651,44 @@ function ttl_store_product_upload($conn, ?array $file, string $prefix): array
     $destination = $uploadDir . DIRECTORY_SEPARATOR . $filename;
     if (!move_uploaded_file((string) $file['tmp_name'], $destination)) {
         return ['success' => false, 'message' => 'Unable to move uploaded image.'];
+    }
+
+    return ['success' => true, 'filename' => $filename];
+}
+
+function ttl_store_avatar_upload($conn, ?array $file, int|string $userId): array
+{
+    $error = ttl_product_upload_error($file);
+    if ($error !== null) {
+        return ['success' => false, 'message' => $error];
+    }
+
+    $extension = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
+    $safeUserId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $userId);
+    $filename = 'avatar_' . ($safeUserId !== '' ? $safeUserId : uniqid('', false)) . '.' . $extension;
+
+    if ($conn instanceof TTLPostgresConnection) {
+        $data = file_get_contents((string) $file['tmp_name']);
+        if ($data === false) {
+            return ['success' => false, 'message' => 'Unable to read uploaded avatar.'];
+        }
+
+        $mime = mime_content_type((string) $file['tmp_name']) ?: 'application/octet-stream';
+        if (!$conn->storeUserImage($filename, $mime, base64_encode($data))) {
+            return ['success' => false, 'message' => 'Unable to save uploaded avatar.'];
+        }
+
+        return ['success' => true, 'filename' => $filename];
+    }
+
+    $uploadDir = dirname(__DIR__) . '/Image/uploads';
+    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true)) {
+        return ['success' => false, 'message' => 'Unable to create upload directory.'];
+    }
+
+    $destination = $uploadDir . DIRECTORY_SEPARATOR . $filename;
+    if (!move_uploaded_file((string) $file['tmp_name'], $destination)) {
+        return ['success' => false, 'message' => 'Unable to move uploaded avatar.'];
     }
 
     return ['success' => true, 'filename' => $filename];

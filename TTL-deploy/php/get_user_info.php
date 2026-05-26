@@ -18,10 +18,12 @@ $stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
+$avatar = $user["avatar"] ?? null;
 
 echo json_encode([
     "success" => true,
     "name" => $user["name"],
-    "avatar" => ttl_avatar_filename($user["avatar"] ?? null),
+    "avatar" => ttl_avatar_filename($avatar),
+    "avatar_url" => ttl_avatar_url($avatar),
     "points" => intval($user["points"])
 ]);
