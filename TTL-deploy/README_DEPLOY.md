@@ -33,6 +33,9 @@ DB_USER
 DB_PASSWORD
 DB_NAME
 DB_PORT
+DB_DRIVER
+DB_SSL
+DB_SSL_VERIFY
 ```
 
 另外，Vercel Functions 的檔案系統不適合永久保存使用者上傳圖片；公開 repo 也不提交 `Image/uploads` 中的使用者上傳資料，只保留預設頭像。若要讓頭像與商品圖片上傳在正式站穩定運作，需要改接外部儲存服務，例如 Supabase Storage 或 Vercel Blob。
