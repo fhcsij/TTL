@@ -276,6 +276,83 @@ class TTLPostgresConnection
     }
 }
 
+class TTLPostgresSessionHandler implements SessionHandlerInterface
+{
+    private PDO $pdo;
+    private bool $ready = false;
+
+    public function __construct(PDO $pdo)
+    {
+        $this->pdo = $pdo;
+    }
+
+    public function open(string $path, string $name): bool
+    {
+        $this->ensureTable();
+        return true;
+    }
+
+    public function close(): bool
+    {
+        return true;
+    }
+
+    public function read(string $id): string|false
+    {
+        $this->ensureTable();
+        $statement = $this->pdo->prepare('SELECT data FROM app_sessions WHERE id = ?');
+        $statement->execute([$id]);
+        $data = $statement->fetchColumn();
+
+        return is_string($data) ? $data : '';
+    }
+
+    public function write(string $id, string $data): bool
+    {
+        $this->ensureTable();
+        $statement = $this->pdo->prepare(
+            'INSERT INTO app_sessions (id, data, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)
+             ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, updated_at = CURRENT_TIMESTAMP'
+        );
+
+        return $statement->execute([$id, $data]);
+    }
+
+    public function destroy(string $id): bool
+    {
+        $this->ensureTable();
+        $statement = $this->pdo->prepare('DELETE FROM app_sessions WHERE id = ?');
+        return $statement->execute([$id]);
+    }
+
+    public function gc(int $max_lifetime): int|false
+    {
+        $this->ensureTable();
+        $statement = $this->pdo->prepare(
+            "DELETE FROM app_sessions WHERE updated_at < CURRENT_TIMESTAMP - (? * INTERVAL '1 second')"
+        );
+        $statement->execute([$max_lifetime]);
+
+        return $statement->rowCount();
+    }
+
+    private function ensureTable(): void
+    {
+        if ($this->ready) {
+            return;
+        }
+
+        $this->pdo->exec(
+            'CREATE TABLE IF NOT EXISTS app_sessions (
+                id varchar(128) PRIMARY KEY,
+                data text NOT NULL,
+                updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )'
+        );
+        $this->ready = true;
+    }
+}
+
 function ttl_pg_normalize_sql(string $sql): string
 {
     $normalized = trim(str_replace('`', '', $sql));
@@ -342,6 +419,11 @@ function get_db_connection()
 
 function get_pg_connection(array $config): TTLPostgresConnection
 {
+    return new TTLPostgresConnection(ttl_pg_pdo($config));
+}
+
+function ttl_pg_pdo(array $config): PDO
+{
     $sslMode = $config['ssl'] ? ($config['ssl_verify'] ? 'verify-full' : 'require') : 'prefer';
     $dsn = sprintf(
         'pgsql:host=%s;port=%d;dbname=%s;sslmode=%s',
@@ -364,7 +446,7 @@ function get_pg_connection(array $config): TTLPostgresConnection
         ttl_database_error_response();
     }
 
-    return new TTLPostgresConnection($pdo);
+    return $pdo;
 }
 
 function ttl_database_error_response(): void
@@ -394,6 +476,16 @@ function ttl_prepare_session_storage(): void
 {
     if (session_status() !== PHP_SESSION_NONE) {
         return;
+    }
+
+    $config = ttl_db_config();
+    if (strtolower((string) $config['driver']) === 'pgsql') {
+        try {
+            session_set_save_handler(new TTLPostgresSessionHandler(ttl_pg_pdo($config)), true);
+            return;
+        } catch (Throwable $exception) {
+            ttl_database_error_response();
+        }
     }
 
     if (ttl_session_path_is_writable((string) ini_get('session.save_path'))) {
