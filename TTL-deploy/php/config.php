@@ -204,6 +204,7 @@ class TTLPostgresStatement
 class TTLPostgresConnection
 {
     private PDO $pdo;
+    private bool $productImagesReady = false;
     public ?string $connect_error = null;
     public int $connect_errno = 0;
     public string $error = '';
@@ -273,6 +274,44 @@ class TTLPostgresConnection
     public function close(): bool
     {
         return true;
+    }
+
+    public function storeProductImage(string $name, string $mime, string $base64Data): bool
+    {
+        $this->ensureProductImagesTable();
+        $statement = $this->pdo->prepare(
+            'INSERT INTO product_images (name, mime, data, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+             ON CONFLICT (name) DO UPDATE SET mime = EXCLUDED.mime, data = EXCLUDED.data, updated_at = CURRENT_TIMESTAMP'
+        );
+
+        return $statement->execute([$name, $mime, $base64Data]);
+    }
+
+    public function getProductImage(string $name): ?array
+    {
+        $this->ensureProductImagesTable();
+        $statement = $this->pdo->prepare('SELECT mime, data FROM product_images WHERE name = ?');
+        $statement->execute([$name]);
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return is_array($row) ? $row : null;
+    }
+
+    private function ensureProductImagesTable(): void
+    {
+        if ($this->productImagesReady) {
+            return;
+        }
+
+        $this->pdo->exec(
+            'CREATE TABLE IF NOT EXISTS product_images (
+                name varchar(255) PRIMARY KEY,
+                mime varchar(100) NOT NULL,
+                data text NOT NULL,
+                updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )'
+        );
+        $this->productImagesReady = true;
     }
 }
 
@@ -458,6 +497,103 @@ function ttl_database_error_response(): void
         'message' => 'Database connection failed. Check DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT, and DB_SSL.',
     ]);
     exit;
+}
+
+function ttl_asset_url(string $relativePath, bool $cacheBust = false): string
+{
+    $url = str_replace('\\', '/', ltrim($relativePath, '/'));
+    if ($cacheBust) {
+        $url .= (str_contains($url, '?') ? '&' : '?') . 't=' . time();
+    }
+
+    return $url;
+}
+
+function ttl_public_file_exists(string $relativePath): bool
+{
+    return is_file(dirname(__DIR__) . '/' . str_replace('/', DIRECTORY_SEPARATOR, ltrim($relativePath, '/')));
+}
+
+function ttl_product_image_url(?string $filename, bool $cacheBust = true): string
+{
+    $rawName = trim((string) $filename);
+    if ($rawName === '') {
+        return ttl_asset_url('Image/logo.png', $cacheBust);
+    }
+
+    if (preg_match('/^(https?:|data:|php\/product_image\.php)/i', $rawName)) {
+        return ttl_asset_url($rawName, $cacheBust);
+    }
+
+    $name = basename(str_replace('\\', '/', $rawName));
+    $relativePath = 'Image/uploads/products/' . $name;
+
+    if (ttl_public_file_exists($relativePath)) {
+        return ttl_asset_url($relativePath, $cacheBust);
+    }
+
+    return ttl_asset_url('php/product_image.php?name=' . rawurlencode($name), $cacheBust);
+}
+
+function ttl_avatar_filename(?string $filename): string
+{
+    $name = basename(str_replace('\\', '/', trim((string) $filename)));
+    if ($name !== '' && ttl_public_file_exists('Image/uploads/' . $name)) {
+        return $name;
+    }
+
+    return 'default.png';
+}
+
+function ttl_product_upload_error(?array $file): ?string
+{
+    if ($file === null || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        return 'Image upload failed.';
+    }
+
+    $extension = strtolower(pathinfo((string) ($file['name'] ?? ''), PATHINFO_EXTENSION));
+    if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true)) {
+        return 'Unsupported image type.';
+    }
+
+    return null;
+}
+
+function ttl_store_product_upload($conn, ?array $file, string $prefix): array
+{
+    $error = ttl_product_upload_error($file);
+    if ($error !== null) {
+        return ['success' => false, 'message' => $error];
+    }
+
+    $extension = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
+    $filename = uniqid($prefix, true) . '.' . $extension;
+
+    if ($conn instanceof TTLPostgresConnection) {
+        $data = file_get_contents((string) $file['tmp_name']);
+        if ($data === false) {
+            return ['success' => false, 'message' => 'Unable to read uploaded image.'];
+        }
+
+        $mime = mime_content_type((string) $file['tmp_name']) ?: 'application/octet-stream';
+        if (!$conn->storeProductImage($filename, $mime, base64_encode($data))) {
+            return ['success' => false, 'message' => 'Unable to save uploaded image.'];
+        }
+
+        return ['success' => true, 'filename' => $filename];
+    }
+
+    $uploadDir = dirname(__DIR__) . '/Image/uploads/products';
+    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true)) {
+        return ['success' => false, 'message' => 'Unable to create upload directory.'];
+    }
+
+    $destination = $uploadDir . DIRECTORY_SEPARATOR . $filename;
+    if (!move_uploaded_file((string) $file['tmp_name'], $destination)) {
+        return ['success' => false, 'message' => 'Unable to move uploaded image.'];
+    }
+
+    return ['success' => true, 'filename' => $filename];
 }
 
 function ttl_session_path_is_writable(string $savePath): bool

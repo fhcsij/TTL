@@ -51,6 +51,7 @@ while ($order = $orderResult->fetch_assoc()) {
 
   $items = [];
   while ($item = $itemResult->fetch_assoc()) {
+    $item['image'] = ttl_product_image_url($item['image']);
     $items[] = $item;
   }
 

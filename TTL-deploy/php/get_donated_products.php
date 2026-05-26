@@ -16,10 +16,9 @@ $sql = "
 
 $result = $conn->query($sql);
 $products = [];
-$timestamp = time();
 
 while ($row = $result->fetch_assoc()) {
-  $row['image'] = "Image/uploads/products/" . $row['image'] . "?t=" . $timestamp;
+  $row['image'] = ttl_product_image_url($row['image']);
   $products[] = $row;
 }
 

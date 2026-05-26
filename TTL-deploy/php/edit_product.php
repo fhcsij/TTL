@@ -1,21 +1,22 @@
 <?php
 require_once __DIR__ . '/config.php';
 session_start();
+header('Content-Type: application/json; charset=utf-8');
 
 if (!isset($_SESSION['id'])) {
   echo json_encode(['success' => false, 'message' => '未登入']);
   exit;
 }
 
-$userId = $_SESSION['id'];
-$id = $_POST['id'] ?? '';
-$name = $_POST['name'] ?? '';
+$userId = (int) $_SESSION['id'];
+$id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+$name = trim((string) ($_POST['name'] ?? ''));
 $price = $_POST['price'] ?? '';
-$desc = $_POST['description'] ?? '';
-$categoryId = $_POST['category_id'] ?? '';
+$desc = (string) ($_POST['description'] ?? '');
+$categoryId = isset($_POST['category_id']) ? (int) $_POST['category_id'] : 0;
 
-if (!$id || !$name || !$price) {
-  echo json_encode(['success' => false, 'message' => '缺少必要欄位']);
+if ($id <= 0 || $name === '' || $price === '' || $categoryId <= 0) {
+  echo json_encode(['success' => false, 'message' => '請填寫完整商品資料']);
   exit;
 }
 
@@ -28,28 +29,15 @@ if ($conn->connect_error) {
 
 $imagePath = '';
 if (!empty($_FILES['image']['tmp_name'])) {
-  $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-  $fileName = 'product_' . $id . '_' . time() . '.' . $ext;
-  $uploadDir = '../Image/uploads/products/';
-  $destination = $uploadDir . $fileName;
-
-  // ✅ 若資料夾不存在，自動建立
-  if (!file_exists($uploadDir)) {
-    mkdir($uploadDir, 0777, true);
-  }
-
-  // ✅ 圖片搬移成功才更新資料庫
-  if (move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
-    // $imagePath = 'Image/uploads/products/' . $fileName;
-    $imagePath = $fileName;
-  } else {
-    echo json_encode(['success' => false, 'message' => '圖片儲存失敗']);
+  $upload = ttl_store_product_upload($conn, $_FILES['image'], 'product_' . $id . '_');
+  if (!$upload['success']) {
+    echo json_encode(['success' => false, 'message' => $upload['message']]);
     exit;
   }
+  $imagePath = $upload['filename'];
 }
 
-// ✅ 決定要不要更新圖片欄位
-if ($imagePath) {
+if ($imagePath !== '') {
   $stmt = $conn->prepare("UPDATE products SET name=?, price=?, description=?, image=?, category_id=? WHERE id=? AND user_id=?");
   $stmt->bind_param("sissiii", $name, $price, $desc, $imagePath, $categoryId, $id, $userId);
 } else {
@@ -62,7 +50,7 @@ $stmt->execute();
 if ($stmt->affected_rows > 0) {
   echo json_encode(['success' => true]);
 } else {
-  echo json_encode(['success' => false, 'message' => '資料未變更或無權限']);
+  echo json_encode(['success' => false, 'message' => '沒有資料被更新']);
 }
 
 $stmt->close();

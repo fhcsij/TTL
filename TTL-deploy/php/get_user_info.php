@@ -22,6 +22,6 @@ $user = $result->fetch_assoc();
 echo json_encode([
     "success" => true,
     "name" => $user["name"],
-    "avatar" => $user["avatar"] ?? "default.png",
+    "avatar" => ttl_avatar_filename($user["avatar"] ?? null),
     "points" => intval($user["points"])
 ]);

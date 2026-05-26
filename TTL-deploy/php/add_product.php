@@ -1,60 +1,39 @@
 <?php
 require_once __DIR__ . '/config.php';
 session_start();
+header('Content-Type: application/json; charset=utf-8');
 
-// ✅ 確認登入
 if (!isset($_SESSION['id'])) {
   echo json_encode(["success" => false, "msg" => "未登入"]);
   exit;
 }
 
-$user_id = $_SESSION["id"]; // ✅ 修正這裡
-
-// ✅ 連接資料庫
-$conn = get_db_connection();
-if ($conn->connect_error) {
-  echo json_encode(["success" => false, "msg" => "連線失敗：" . $conn->connect_error]);
-  exit;
-}
-
-// ✅ 處理圖片上傳
-$uploadDir = "../Image/uploads/products/";
-if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
-
-if (!isset($_FILES["image"]) || $_FILES["image"]["error"] !== 0) {
-  echo json_encode(["success" => false, "msg" => "圖片上傳失敗"]);
-  exit;
-}
-
-$ext = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
-$allowed = ['jpg', 'jpeg', 'png', 'gif'];
-if (!in_array($ext, $allowed)) {
-  echo json_encode(["success" => false, "msg" => "不支援的圖片格式"]);
-  exit;
-}
-
-$imageName = uniqid("prod_", true) . "." . $ext;
-$imagePath = $uploadDir . $imageName;
-if (!move_uploaded_file($_FILES["image"]["tmp_name"], $imagePath)) {
-  echo json_encode(["success" => false, "msg" => "圖片儲存失敗"]);
-  exit;
-}
-
-// ✅ 接收商品資料
-$name = $_POST["name"] ?? '';
+$user_id = (int) $_SESSION["id"];
+$name = trim((string) ($_POST["name"] ?? ''));
 $price = $_POST["price"] ?? '';
-$desc = $_POST["description"] ?? '';
-//$category_id = 1; // 預設分類
-$category_id = $_POST['category_id'];
+$desc = (string) ($_POST["description"] ?? '');
+$category_id = isset($_POST['category_id']) ? (int) $_POST['category_id'] : 0;
 
-// ✅ 防呆檢查
-if (empty($name) || empty($price)) {
-  echo json_encode(["success" => false, "msg" => "名稱與價格不能為空"]);
+if ($name === '' || $price === '' || $category_id <= 0) {
+  echo json_encode(["success" => false, "msg" => "請填寫完整商品資料"]);
   exit;
 }
 
-// ✅ 寫入資料表
-$stmt = $conn->prepare("INSERT INTO products (name, description, price, image, user_id, category_id) VALUES (?, ?, ?, ?, ?, ? )");
+$conn = get_db_connection();
+
+if ($conn->connect_error) {
+  echo json_encode(["success" => false, "msg" => "資料庫連線失敗"]);
+  exit;
+}
+
+$upload = ttl_store_product_upload($conn, $_FILES["image"] ?? null, "prod_");
+if (!$upload['success']) {
+  echo json_encode(["success" => false, "msg" => $upload['message']]);
+  exit;
+}
+
+$imageName = $upload['filename'];
+$stmt = $conn->prepare("INSERT INTO products (name, description, price, image, user_id, category_id) VALUES (?, ?, ?, ?, ?, ?)");
 $stmt->bind_param("ssdsii", $name, $desc, $price, $imageName, $user_id, $category_id);
 
 if ($stmt->execute()) {
@@ -65,6 +44,5 @@ if ($stmt->execute()) {
     "price" => $price
   ]);
 } else {
-  echo json_encode(["success" => false, "msg" => "資料寫入失敗：" . $stmt->error]);
+  echo json_encode(["success" => false, "msg" => "商品新增失敗"]);
 }
-?>

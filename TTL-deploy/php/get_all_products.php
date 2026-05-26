@@ -18,10 +18,9 @@ ORDER BY p.created_at DESC
   $result = $stmt->get_result();
 
   $products = [];
-  $timestamp = time();
   while ($row = $result->fetch_assoc()) {
     // 加上圖片完整路徑與時間戳記，防止快取
-    $row['image'] = "Image/uploads/products/" . $row['image'] . "?t=" . $timestamp;
+    $row['image'] = ttl_product_image_url($row['image']);
     $products[] = $row;
   }
 

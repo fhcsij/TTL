@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
           product.className = 'product-item mb-2';
           product.innerHTML = `
             <div class="d-flex align-items-center">
-              <img src="Image/uploads/products/${item.image}" alt="商品圖片" style="width: 80px; height: 80px;">
+              <img src="${item.image}" alt="商品圖片" style="width: 80px; height: 80px;">
               <div class="ms-3">
                 <h6>${item.name}</h6>
                 <p class="mb-0">數量：${item.quantity}　單價：$${item.price}</p>

@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     productsToShow.forEach(product => {
-      const imageSrc = product.image + '?t=' + Date.now();
+      const imageSrc = product.image + (product.image.includes('?') ? '&v=' : '?t=') + Date.now();
       const card = document.createElement("div");
       card.className = "col-md-4 mb-3";
       card.innerHTML = `

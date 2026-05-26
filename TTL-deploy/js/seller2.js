@@ -11,7 +11,7 @@ function loadDonatedProducts() {
       }
 
       data.products.forEach(product => {
-        const imageSrc = product.image + '?t=' + Date.now();
+        const imageSrc = product.image + (product.image.includes('?') ? '&v=' : '?t=') + Date.now();
         const col = document.createElement("div");
         col.className = "col-md-4 mb-3";
         col.innerHTML = `

@@ -24,7 +24,7 @@ $result = $stmt->get_result();
 
 $items = [];
 while ($row = $result->fetch_assoc()) {
-  $row['image'] = 'Image/uploads/products/' . $row['image'];
+  $row['image'] = ttl_product_image_url($row['image']);
   $items[] = $row;
 }
 
