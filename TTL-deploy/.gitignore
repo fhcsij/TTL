@@ -1,0 +1,7 @@
+php/config.local.php
+twotimelight.sql
+Image/uploads/*
+!Image/uploads/default.png
+.DS_Store
+var/sessions/*
+!var/sessions/.gitkeep

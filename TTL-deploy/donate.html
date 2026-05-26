@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <title>愛心捐贈 - SecondHand</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .category-card {
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+
+    .category-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-img-top {
+      height: 100%;
+      /* width: 100%; */
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+    }
+
+    .category-card .card-body {
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .emoji {
+      font-size: 1.4rem;
+      margin: 0 5px;
+    }
+    
+    .notice {
+      font-weight: bold;
+      text-align: center;
+      font-size:larger;
+      margin-bottom: 30px;
+      color: #568589;
+    }
+
+    .donor-name {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 0.8em;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="navbar-placeholder"></div>
+
+    <main class="container mt-4 mb-5">
+      <p class="notice">
+        <span class="emoji">👾</span>
+        
+        捐贈一件物資，即可獲得 <span style="color: #e06c75;">10 點數</span>（點數可用於結帳時折扣）
+        <span class="emoji">👾</span>
+      </p>
+
+      <!-- 類別列表 -->
+      <div class="row g-4">
+        <div class="container mt-4">
+          <div class="row" id="donatedContainer"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 捐贈 Modal -->
+    <div class="modal fade" id="donateModal" tabindex="-1">
+      <div class="modal-dialog">
+        <form class="modal-content p-3">
+          <h5 class="fw-bold mb-3">填寫捐贈資料</h5>
+          <input type="hidden" id="donate-category">
+          <div class="mb-3">
+            <label>物品名稱</label>
+            <input type="text" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label>簡短描述</label>
+            <textarea class="form-control" rows="3"></textarea>
+          </div>
+          <div class="mb-3">
+            <label>上傳圖片</label>
+            <input type="file" class="form-control" accept="image/*">
+          </div>
+          <div class="text-end">
+            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">取消</button>
+            <button type="submit" class="btn btn-success">送出捐贈</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  
+  <div id="footer-placeholder"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="Sample/main.js"></script>
+  <script>
+    // 記錄點了哪一個類別
+    document.querySelectorAll('.category-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const category = card.getAttribute('data-category');
+        document.getElementById('donate-category').value = category;
+      });
+    });
+  </script>
+  <script src="js/donated_products.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <title>註冊 - 二拾光</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #f2f2f2;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .container-fluid {
+      display: flex;
+      height: 100vh;
+      padding: 0;
+      margin: 0;
+    }
+
+    .left-panel {
+      background-color: #a9bfc0;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .left-panel img {
+      width: 200px;
+      margin-bottom: 10px;
+    }
+
+    .left-panel .title {
+      font-size: 60px;
+      font-weight: bold;
+      color: #1c3c35;
+    }
+
+    .left-panel .subtitle {
+      font-size: 40px;
+      color: #1c3c35;
+    }
+
+    .branding {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-family: ‘cwTeXKai’, serif;
+    }
+
+    .text-group {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .right-panel {
+      background-color: #f7f7f7;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .form-box {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 15px;
+      border: 2px solid #568589;
+      width: 100%;
+      height: 500px;
+      max-width: 400px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-box label {
+      font-weight: bold;
+      margin-top: 15px;
+      color: #333;
+    }
+
+    .form-control {
+      border-radius: 10px;
+      border: 2px solid #568589;
+    }
+
+    .btn-register {
+      margin-top: 30px;
+      width: 100%;
+      background-color: #568589;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 18px;
+      color: white;
+      margin-top: auto;
+    }
+
+    .btn-register:hover {
+      box-shadow: 0 0 10px 3px rgba(86, 133, 137, 0.7);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container-fluid">
+    <!-- 左側品牌區 -->
+    <div class="left-panel">
+      <div class="branding">
+        <img src="Image/logo.png" alt="logo">
+        <div class="text-group">
+          <div class="title">二 拾 光</div>
+          <div class="subtitle">二手交易平台</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右側註冊表單 -->
+    <div class="right-panel">
+      <div class="form-box">
+        <form action="php/register.php" method="post">
+          <label for="name" style="margin-bottom: 10px;">用戶名</label>
+          <input type="text" class="form-control" id="name" name="name" placeholder="請輸入名稱" required>
+
+          <label for="username" style="margin-bottom: 10px;">帳號</label>
+          <input type="text" class="form-control" id="username" name="username" placeholder="請輸入帳號" required>
+
+          <label for="password" style="margin-bottom: 10px;">密碼</label>
+          <input type="password" class="form-control" id="password" name="password" placeholder="請輸入密碼" required>
+
+          <input type="password" class="form-control mt-2" id="confirm" name="confirm" placeholder="請再次輸入密碼" required>
+
+          <button type="submit" class="btn-register">註冊</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

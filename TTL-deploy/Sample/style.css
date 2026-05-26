@@ -1,0 +1,63 @@
+/* style.css */
+html, body {
+  /* font-family: "Segoe UI", sans-serif; */
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+
+
+body {
+  background-color: #f7f7f7;
+}
+
+.content-wrapper {
+  flex: 1;
+}
+
+  .navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .navbar-brand img {
+    border-radius: 50%;
+  }
+  .container {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    margin-top: 2rem;
+  }
+  h4 {
+    font-weight: bold;
+    color: #0d6efd;
+    margin-bottom: 1rem;
+  }
+  .product-card {
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+  }
+  .product-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .product-card img {
+    object-fit: cover;
+    height: 180px;
+  }
+  .product-name {
+    font-weight: bold;
+    color: #333;
+  }
+  .nav-link.active {
+    font-weight: bold;
+    color: #0d6efd !important;
+  }
+  

@@ -1,0 +1,7 @@
+TTL-deploy.zip
+TTL-deploy/twotimelight.sql
+TTL-deploy/Image/uploads/*
+!TTL-deploy/Image/uploads/default.png
+TTL-deploy/.DS_Store
+TTL-deploy/var/sessions/*
+!TTL-deploy/var/sessions/.gitkeep

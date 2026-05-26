@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <title>賣家中心 - SecondHand</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ⬅️左側 */
+    .profile-box {
+      background-color: #fff;
+      border: 2px solid #568589;
+      border-radius: 15px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .profile-box img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 20px;
+    }
+
+    /* 提示字：點擊變更頭像 */
+    .avatar-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .avatar-overlay {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .avatar-tooltip {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      color: #568589;
+      font-weight: bold;
+      background-color: transparent;
+
+      /* 文字大小 */
+      font-size: 1.1rem;
+      line-height: 1.5;
+
+      /* 讓換行生效 */
+      white-space: pre-line;
+      text-align: center;
+
+      /* 白色描邊 */
+      text-shadow:
+        -1px -1px 0 white,
+        1px -1px 0 white,
+        -1px 1px 0 white,
+        1px 1px 0 white;
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    /* 滑鼠放在圖上，圖片透明度降低 */
+    .avatar-overlay:hover .avatar-img {
+      opacity: 0.5;
+    }
+
+    /* 顯示提示字 */
+    .avatar-overlay:hover .avatar-tooltip {
+      opacity: 1;
+    }
+
+    /* BOTTON */
+    .button-group {
+      margin-top: auto;
+    }
+
+    /* 上架中商品btn */
+    .btn-secondary {
+      border: 2px solid #568589;
+      background-color: #568589;
+      transition: none;
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      border: 2px solid #568589;
+      background-color: #568589;
+      color: white;
+      box-shadow: 0 0 10px 1px rgba(86, 133, 137, 0.7);
+      transform: none;
+    }
+
+    /* 捐贈商品btn */
+    .btn-light-outline {
+      border: 2px solid #568589;
+      color: #568589;
+    }
+
+    .btn-light-outline:hover {
+      border: 2px solid #568589;
+      color: #568589;
+      box-shadow: 0 0 10px 1px rgba(86, 133, 137, 0.7);
+    }
+
+    /* 刪除btn */
+    .delete-btn {
+      background-color: #e06c75;
+      border: #e06c75;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background-color: #b3565d;
+      color: white;
+    }
+
+    /* ➡️右側 */
+    .product-box {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 40px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 80vh;
+    }
+
+    .product-card {
+      border: none;
+      box-shadow: 0 4px 4px rgba(0, 0, 0, 0.15);
+      border-radius: 10px;
+      /* height: 100%; */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-card:hover {
+      transition: box-shadow 0.3s ease;
+      transform: scale(1.02);
+    }
+
+    /* 按下刪除商品時，沒有hover */
+    .product-card.no-hover:hover {
+      box-shadow: 0 4px 4px rgba(0, 0, 0, 0.15) !important;
+      transform: none !important;
+      cursor: default;
+    }
+
+    .product-card img {
+      height: 180px;
+      object-fit: cover;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+
+    .product-card .card-body {
+      text-align: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .btn-action {
+      border-radius: 10px;
+      margin-left: 10px;
+      margin-bottom: 10px;
+    }
+
+    .product-card .card-text .text-muted {
+      min-height: 1em;
+    }
+
+    #productList {
+      max-height: calc(90vh - 180px);
+      overflow-y: auto;
+      padding: 10px;
+      flex-grow: 1;
+    }
+
+    h4,
+    h5 {
+      color: #568589;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="navbar-placeholder"></div>
+
+  <main>
+
+    <div class="container mt-4">
+      <div class="row">
+
+        <!-- 左側資料區 -->
+        <div class="col-md-4">
+          <div class="profile-box">
+            <div style="margin-top: 40px;">
+              <!-- 點頭像可以觸發上傳 -->
+              <div class="avatar-wrapper">
+                <label for="avatarUpload">
+                  <div class="avatar-overlay">
+                    <img id="avatarImg" class="avatar-img" src="Image/uploads/avatar_4.jpg" alt="頭像">
+                    <div class="avatar-tooltip">點擊變更<br>頭像</div>
+                  </div>
+                </label>
+              </div>
+
+              <!-- 上傳表單（隱藏） -->
+              <form id="avatarForm" style="display:none;" enctype="multipart/form-data">
+                <input type="file" id="avatarUpload" name="avatar" accept="image/*">
+              </form>
+
+              <h4 id="username">載入中...</h4>
+              <p style="color: #333;">點數 💰：<span id="userPoints">載入中...</span></p>
+            </div>
+
+            <div class="button-group mt-auto w-100">
+              <button class="btn btn-secondary w-75 mb-4">上架中商品</button><br>
+              <button class="btn btn-light-outline w-75" onclick="location.href='seller2.html'">捐贈紀錄</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右側商品區 -->
+        <div class="col-md-8">
+          <div class="product-box">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="mb-3">上架中商品</h4>
+              <div>
+                <button class="btn btn-light-outline btn-sm btn-action" data-bs-toggle="modal"
+                  data-bs-target="#addProductModal">
+                  ＋ 新增商品
+                </button>
+
+                <button class="btn btn-light-outline btn-sm btn-action">
+                  － 刪除商品
+                </button>
+              </div>
+            </div>
+
+            <div class="row" id="productList">123</div>
+            <nav>
+              <ul class="pagination justify-content-center mt-3" id="userPagination"></ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+
+  <!-- 新增商品Modal -->
+  <div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog">
+      <form id="addProductForm" enctype="multipart/form-data" class="modal-content p-3">
+        <h5>新增商品</h5>
+        <div class="mb-3">
+          <label>商品圖片</label>
+          <input type="file" name="image" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>商品名稱</label>
+          <input type="text" name="name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>商品價格</label>
+          <input type="number" name="price" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>商品描述</label>
+          <textarea name="description" class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label>商品分類</label>
+          <select name="category_id" id="categorySelect" class="form-control" required>
+            <option value="">請選擇分類</option>
+          </select>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-top: 10px;">
+          <button type="button" class="btn btn-light-outline me-2" data-bs-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-secondary">上架</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 編輯商品 Modal -->
+  <div class="modal fade" id="editProductModal" tabindex="-1">
+    <div class="modal-dialog">
+      <form id="editProductForm" enctype="multipart/form-data" class="modal-content p-3">
+        <h5>編輯商品</h5>
+        <input type="hidden" name="id" id="edit-id">
+        <div class="mb-3">
+          <label>圖片</label>
+          <input type="file" name="image" class="form-control">
+          <img id="edit-preview" src="" alt=""
+            style="width: 100%; max-height: 200px; object-fit: cover; margin-top: 10px;">
+        </div>
+        <div class="mb-3">
+          <label>商品名稱</label>
+          <input type="text" name="name" id="edit-name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>商品價格</label>
+          <input type="number" name="price" id="edit-price" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>商品描述</label>
+          <textarea name="description" id="edit-description" class="form-control"></textarea>
+        </div>
+        <div class="mb-3">
+          <label>商品分類</label>
+          <select name="category_id" id="edit-category" class="form-control" required>
+            <option value="">請選擇分類</option>
+          </select>
+        </div>
+
+        <div class="d-flex justify-content-end" style="margin-top: 10px;">
+          <button type="button" class="btn btn-light-outline me-2" data-bs-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-secondary">儲存變更</button>
+        </div>
+
+    </div>
+    </form>
+  </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="Sample/main.js"></script>
+  <script src="js/seller.js"></script>
+
+</body>
+
+</html>

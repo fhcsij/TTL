@@ -1,0 +1,123 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #f7f7f7;
+  padding-top: 40px;
+}
+
+main {
+  flex: 1;
+}
+
+.navbar {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.navbar-brand img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  margin: 0 10px 0 20px;
+  border-radius: 50%;
+}
+
+.navbar-nav .nav-link {
+  font-size: 1.1rem;
+  font-weight: normal;
+  color: black;
+  transition: font-weight 0.2s ease; /* 平滑加粗效果 */
+}
+
+.navbar-nav .nav-link:hover {
+  font-weight: bold;
+  color: #568589;
+}
+
+/* 滑鼠點下去 */
+.nav-link.active {
+  font-weight: bold;
+  color: #568589 !important;
+}
+
+.navbar-nav .nav-link.active:hover {
+  color: #568589;
+  font-weight: bold;
+}
+
+h4 {
+  font-weight: bold;
+  color: #2c473e;
+  margin-bottom: 1rem;
+}
+
+.product-card {
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+
+.product-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.product-card img {
+  object-fit: cover;
+  height: 180px;
+}
+
+.product-name {
+  font-weight: bold;
+  color: #333;
+}
+
+#cartIcon,
+#userIcon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+/* 頁數 */
+.pagination .page-link {
+  color: #a3d0d4;
+  border-color: #568589; 
+  background-color: transparent;
+  transition: box-shadow 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.pagination .page-link:hover {
+  color: #3a5a5d;
+  box-shadow: 0 4px 10px rgba(86, 133, 137, 0.3);
+  border-color: #568589;
+  background-color: transparent;
+}
+
+.pagination .page-item.active .page-link {
+  color: #3a5a5d;
+  box-shadow: 0 4px 12px rgba(86, 133, 137, 0.5);
+  border-color: #568589;
+  background-color: transparent;
+}
+
+/* 左上角分類標籤 */
+.badge-category {
+  background-color:  #99B5B8; 
+  color: #fff;
+  font-weight: 600;
+  padding: 0.25em 0.6em;
+  border-radius: 0.375rem; /* Bootstrap badge 大小 */
+  font-size: 0.75rem;
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 10;
+}

@@ -1,0 +1,33 @@
+<?php
+require_once __DIR__ . '/config.php';
+session_start();
+if (!isset($_SESSION['id'])) {
+  echo json_encode(["success" => false, "message" => "未登入"]);
+  exit;
+}
+
+$conn = get_db_connection();
+$userId = $_SESSION['id'];
+
+$stmt = $conn->prepare("
+  SELECT p.id, p.name, p.price, p.description, p.image, c.name AS category_name
+  FROM products p
+  LEFT JOIN categories c ON p.category_id = c.id
+  WHERE p.user_id = ? 
+    AND p.donated = 0 
+    AND p.is_sold = 0
+  ORDER BY p.created_at DESC
+");
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$products = [];
+$timestamp = time();
+
+while ($row = $result->fetch_assoc()) {
+  $row['image'] = "Image/uploads/products/" . $row['image'] . "?t=" . $timestamp;
+  $products[] = $row;
+}
+
+echo json_encode(["success" => true, "products" => $products]);

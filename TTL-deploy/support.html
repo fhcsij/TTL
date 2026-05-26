@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <title>客戶服務 - 二拾光</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    main {
+      margin: 0;
+      padding: 3%;
+    }
+
+    /* 左側 */
+    .card {
+      border-radius: 15px;
+    }
+
+    .card-fullheight {
+      height: 80vh;
+      flex-grow: 1;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border: 2px solid #7f9ba0;
+      border-radius: 15px;
+    }
+
+    .card-fullheight img {
+      margin-bottom: 30px;
+    }
+
+    .card-fullheight h5 {
+      margin-bottom: 15px;
+    }
+
+    .card-fullheight p {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      width: 80%;
+      margin: 0 auto 40px auto;
+    }
+
+    #complaintBtn {
+      width: 60%;
+      height: 8%;
+      margin: 0 auto;
+    }
+
+    /* 中間空隙 */
+    .row.flex-md-row {
+      gap: 80px;
+    }
+
+    /* 右側 */
+    h4 {
+      color: #568589;
+      margin-bottom: 20px;
+    }
+
+    .contact {
+      padding-left: 30px;
+      color: #546062;
+      font-size: 1.25rem;
+      margin-bottom: 50px;
+    }
+
+    .faq-box {
+      padding-left: 30px;
+      width: 100%;
+    }
+
+    .faq-box .faq-item {
+      border: 1px solid white;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      background-color: white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .faq-box .question {
+      color: #5a6f73;
+      cursor: pointer;
+      padding: 15px 20px;
+      font-weight: bold;
+    }
+
+    .faq-box .answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s ease;
+      padding: 0 20px;
+      background-color: #f8f9fa;
+      color: #546062;
+      font-size: 1rem;
+      line-height: 1.7;
+      box-sizing: border-box;
+      border-top: none;
+      box-shadow: none;
+    }
+
+    .faq-box .answer.open {
+      border-top: 1px solid #ccc;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      border-radius: 4px;
+    }
+
+    .btn-gray {
+      background-color: #568589;
+      color: white;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .btn-gray:hover {
+      background-color: #568589;
+      color: white;
+      box-shadow: 0 0 10px 3px rgba(86, 133, 137, 0.5);
+    }
+
+    .icon-warning {
+      color: #f1c40f;
+      font-size: 1.2rem;
+    }
+
+    /* 彈出視窗樣式 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-primary {
+      border: 2px solid #568589;
+      background-color: #568589;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      border: 2px solid #568589;
+      background-color: #568589;
+      color: white;
+      box-shadow: 0 0 10px 3px rgba(86, 133, 137, 0.7);
+    }
+
+    .btn-secondary {
+      border: 2px solid #568589;
+      background-color: white;
+      color: #568589;
+    }
+
+    .btn-secondary:hover {
+      border: 2px solid #568589;
+      background-color: white;
+      color: #568589;
+      box-shadow: 0 0 10px 3px rgba(86, 133, 137, 0.7);
+    }
+
+    #orderList .list-group-item.active {
+      background-color: #99B5B8;
+      color: #333;
+      border-color: #99B5B8;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="navbar-placeholder"></div>
+
+  <main>
+    <!-- 主要內容 -->
+    <div class="container h-100 d-flex flex-column">
+      <div class="row d-flex flex-column flex-md-row align-items-stretch h-100">
+        <!-- 商品問題 -->
+        <div class="col-md-4">
+          <div class="card p-3 text-center card-fullheight">
+            <img src="Image/uploads/avatar_1.gif" alt="商品圖片" class="rounded-circle mx-auto" width="120">
+            <h5 class="mt-3" style="color: #568589;">商品有問題？</h5>
+            <p><span class="icon-warning">⚠️</span> 二手商品具有使用痕跡，請確認問題屬「非正常損耗」方可退款。</p>
+            <button id="complaintBtn" class="btn btn-gray">訂單申訴</button>
+          </div>
+        </div>
+
+        <!-- 聯絡我們與FAQ -->
+        <div class="col-md-7">
+          <h4>聯絡我們</h4>
+          <p class="contact">
+            mail: secondhand@gmail.com<br>
+            聯絡電話： (03)255-5678
+          </p>
+
+          <h4 class="mt-4">常見問題（FAQ）</h4>
+          <div class="faq-box">
+            <div class="faq-item">
+              <div class="question">Q1：如果商品不喜歡可以退貨嗎？</div>
+              <div class="answer">A1：基於二手交易特性，除非商品與描述不符或有重大瑕疵，一般情況下不接受退貨，請購買前詳閱商品資訊並與賣家確認。</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="question">Q2：收到商品有損壞或與描述不符怎麼辦？</div>
+              <div class="answer">A2：請於收到商品的 3 天內聯絡客服並附上照片證明，我們將協助與賣家協調退款或換貨事宜。</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="question">Q3：我可以自己上架商品嗎？</div>
+              <div class="answer">A3：可以！只要註冊成為會員並通過基本認證，即可上架您要販售的商品。</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="question">Q4：商品上架後可以修改嗎？</div>
+              <div class="answer">A4：商品尚未售出前都可以修改內容、價格或圖片。若商品已售出，則無法進行修改。</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="question">Q5：有哪些付款方式？</div>
+              <div class="answer">A5：平台目前支援信用卡、ATM 轉帳及超商代碼繳費等方式。</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="question">Q6：我已付款但賣家沒出貨怎麼辦？</div>
+              <div class="answer">A6：平台有金流保管機制，若賣家在期限內未出貨，款項將退還給買家，請放心。</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="question">Q7：商品怎麼寄送？運費誰負擔？</div>
+              <div class="answer">A7：賣家可選擇超商店到店、宅配等方式寄送，運費可由賣家或買家負擔，依商品頁面標示為準。</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="question">Q8：可以面交嗎？</div>
+              <div class="answer">A8：若雙方同意可自行面交，但請務必選擇公開、安全的地點，並保留對話紀錄。</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="question">Q9：我買錯東西了可以取消訂單嗎？</div>
+              <div class="answer">A9：訂單成立後若尚未付款可自行取消。若已付款需與賣家聯繫確認是否可取消，否則無法退訂。</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="question">Q10：我要怎麼刪除帳號？</div>
+              <div class="answer">A10：請在會員中心申請刪除帳號，客服審核後會於 7 個工作天內處理完畢。刪除後資料將無法復原，請慎重操作。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <!-- 申訴表單  -->
+  <div id="complaintModal" class="modal-overlay">
+    <div class="modal-content">
+      <h5 class="mb-3">訂單申訴表單</h5>
+      <form id="complaintForm">
+        <div id="orderHistory" class="mb-3">
+          <label class="form-label">選擇要申訴的訂單：</label>
+          <div id="orderList" class="list-group"></div>
+        </div>
+        <div class="mb-3">
+          <label for="reason" class="form-label">申訴原因</label>
+          <textarea class="form-control" id="reason" rows="3" required></textarea>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-top: 20px;">
+          <button type="button" id="closeModal" class="btn btn-secondary me-2">關閉</button>
+          <button type="submit" class="btn btn-primary">送出</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="Sample/main.js"></script>
+  <script src="js/support.js"></script>
+
+</body>
+
+
+<script src="js/support.js"></script>
+
+</html>

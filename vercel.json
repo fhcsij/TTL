@@ -1,0 +1,46 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/*.php": {
+      "runtime": "vercel-php@0.5.2"
+    }
+  },
+  "routes": [
+    {
+      "src": "/php/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/TTL-deploy/(php|var)/(.*)",
+      "status": 404
+    },
+    {
+      "src": "/TTL-deploy/(.*\\.sql|.*\\.md|\\.DS_Store|\\.gitignore|\\.htaccess)",
+      "status": 404
+    },
+    {
+      "src": "/(.*\\.sql|README_DEPLOY\\.md|TTL-deploy\\.zip)",
+      "status": 404
+    },
+    {
+      "src": "/(Image|js|Sample)/(.*)",
+      "dest": "/TTL-deploy/$1/$2"
+    },
+    {
+      "src": "/style\\.css",
+      "dest": "/TTL-deploy/style.css"
+    },
+    {
+      "src": "/(about|appeal|buyer|buyer2|cart|complaint|donate|index|login|product_detail|product_list|register|seller|seller2|support)\\.html",
+      "dest": "/TTL-deploy/$1.html"
+    },
+    {
+      "src": "/",
+      "dest": "/TTL-deploy/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/TTL-deploy/$1"
+    }
+  ]
+}

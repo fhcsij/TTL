@@ -1,0 +1,40 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="index.html">
+      <img src="Image/logo.png" alt="logo" style="width: 50px; height: 50px; border-radius: 50%;">
+    </a>
+
+    <!-- 漢堡選單按鈕 -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+      aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- 導覽連結區塊 -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="product_list.html">二手商品</a></li>
+        <li class="nav-item"><a class="nav-link" href="donate.html">愛心捐贈</a></li>
+        <li class="nav-item"><a class="nav-link" href="support.html">客戶服務</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html">關於我們</a></li>
+      </ul>
+
+      <ul class="navbar-nav ms-auto d-flex flex-row align-items-center">
+        <li class="nav-item me-3">
+          <a class="nav-link" href="cart.html">
+            <img id="cartIcon" src="Image/cart.png" alt="Cart" style="width: 24px; height: 24px;">
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+            <img id="userIcon" src="Image/user.png" alt="User" style="width: 28px; height: 28px;">
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" href="buyer.html">買家中心</a></li>
+            <li><a class="dropdown-item" href="seller.html">賣家中心</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
