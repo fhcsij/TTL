@@ -1,4 +1,6 @@
 TTL-deploy.zip
+ttl-vercel-export/
+ttl-vercel-export.tar
 TTL-deploy/twotimelight.sql
 TTL-deploy/php/config.local.php
 TTL-deploy/Image/uploads/*

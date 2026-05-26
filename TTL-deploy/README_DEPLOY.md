@@ -23,7 +23,7 @@ localhost / root / 空密碼 / twotimelight
 
 ## Vercel 部署注意
 
-根目錄的 `vercel.json` 會把網站公開路徑導到 `TTL-deploy`，並把 `/php/*.php` 轉到 `/api/*.php` wrapper，再透過 `vercel-php` community runtime 執行 PHP。
+根目錄的 `vercel.json` 會把網站公開路徑導到 `TTL-deploy`，並把 `/php/*.php` 轉到 `/api/*.php` wrapper，再透過 `vercel-php@0.9.0` community runtime 執行 PHP。
 
 Vercel 上必須在專案環境變數設定：
 
