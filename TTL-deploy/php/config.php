@@ -165,6 +165,11 @@ class TTLPostgresStatement
         return $this->result ?? new TTLPostgresResult([]);
     }
 
+    public function store_result(): bool
+    {
+        return true;
+    }
+
     public function bind_result(mixed &...$vars): bool
     {
         $this->boundResultRefs = [];
