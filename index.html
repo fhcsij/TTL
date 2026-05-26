@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="陳彥旭 fhcsij 的動態作品集原型，展示遊戲開發、互動設計與網頁專案。"
+    />
+    <title>陳彥旭 fhcsij｜動態作品集原型</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="assets/logo-fhcsij.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <div class="scroll-progress" aria-hidden="true">
+      <span class="scroll-progress__bar"></span>
+    </div>
+    <div class="cursor-ring" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="回到首頁">
+        <span class="brand-mark">
+          <img src="assets/logo-fhcsij.svg" alt="" />
+        </span>
+        <span>fhcsij</span>
+      </a>
+      <nav class="nav-links" aria-label="主要導覽">
+        <a href="#work">作品</a>
+        <a href="#browse">分類</a>
+        <a href="#skills">技能</a>
+        <a href="#contact">聯絡</a>
+      </nav>
+      <button class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false">
+        <span></span>
+        <span></span>
+      </button>
+    </header>
+
+    <main id="top">
+      <section class="hero section-band">
+        <div class="hero-copy">
+          <p class="eyebrow">Game Developer / Interactive Design / Portfolio 2026</p>
+          <h1>把遊戲手感、互動節奏與網頁敘事接在一起。</h1>
+          <p class="hero-lede">
+            我是陳彥旭 fhcsij。這是一份先拿來試動畫節奏的作品集原型：重點放在滾動時的轉場、作品展示的速度感，以及訪客看完後能快速記住我的方向。
+          </p>
+          <div class="hero-actions" aria-label="主要操作">
+            <a class="button primary" href="#work">觀看動態作品</a>
+            <a class="button secondary" href="mailto:risingsun940506@gmail.com">聯絡我</a>
+          </div>
+        </div>
+
+        <figure class="hero-visual" aria-label="作品集視覺預覽">
+          <img src="assets/portfolio-visual.png" alt="作品集視覺圖" />
+          <figcaption>
+            <span>Portfolio</span>
+            <strong>2026</strong>
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="stats section-band reveal" aria-label="作品集摘要">
+        <div>
+          <strong data-count="7">0</strong>
+          <span>作品與原型</span>
+        </div>
+        <div>
+          <strong data-count="4">0</strong>
+          <span>主要能力面向</span>
+        </div>
+        <div>
+          <strong data-count="2026">0</strong>
+          <span>持續更新中</span>
+        </div>
+      </section>
+
+      <section class="intro-strip">
+        <div class="intro-strip__inner">
+          <span>Unity</span>
+          <span>Phaser</span>
+          <span>TouchDesigner</span>
+          <span>MediaPipe</span>
+          <span>HTML</span>
+          <span>CSS</span>
+          <span>JavaScript</span>
+          <span>PHP</span>
+        </div>
+      </section>
+
+      <section class="work-intro section-band" id="work">
+        <p class="eyebrow reveal">Selected Work</p>
+        <div class="section-heading reveal">
+          <h2>先用水平捲動，讓作品像一段可以被瀏覽的時間軸。</h2>
+          <p>
+            這段是主要動態展示：桌機會固定區塊並橫向滑動，手機則改成直向列表，先讓整體節奏好讀，再慢慢調整成你想要的個人風格。
+          </p>
+        </div>
+      </section>
+
+      <section class="horizontal-showcase" aria-label="精選作品動態展示">
+        <div class="project-track" id="featuredTrack"></div>
+      </section>
+
+      <section class="browse section-band" id="browse">
+        <div class="section-heading reveal">
+          <div>
+            <p class="eyebrow">Browse</p>
+            <h2>依類型快速瀏覽</h2>
+          </div>
+          <p>
+            作品卡保留篩選功能，後面可以接實際作品頁、影片或 GitHub。現在先看動畫與排版效果。
+          </p>
+        </div>
+
+        <div class="filter-bar reveal" role="tablist" aria-label="作品分類">
+          <button class="filter-button active" type="button" data-filter="all" role="tab" aria-selected="true">
+            全部
+          </button>
+          <button class="filter-button" type="button" data-filter="game" role="tab" aria-selected="false">
+            Game
+          </button>
+          <button class="filter-button" type="button" data-filter="interactive" role="tab" aria-selected="false">
+            Interactive
+          </button>
+          <button class="filter-button" type="button" data-filter="web" role="tab" aria-selected="false">
+            Web
+          </button>
+          <button class="filter-button" type="button" data-filter="visual" role="tab" aria-selected="false">
+            Visual
+          </button>
+        </div>
+
+        <div class="project-grid" id="projectGrid"></div>
+      </section>
+
+      <section class="skills" id="skills">
+        <div class="section-band">
+          <div class="section-heading reveal">
+            <div>
+              <p class="eyebrow">Capabilities</p>
+              <h2>我可以把想法做到可玩、可看、可操作。</h2>
+            </div>
+            <p>
+              目前能力橫跨遊戲原型、互動裝置、網頁介面與資料整理。這一段用分批浮現測試閱讀節奏。
+            </p>
+          </div>
+
+          <div class="skill-grid">
+            <article class="skill-card reveal-card">
+              <span>01</span>
+              <h3>遊戲開發</h3>
+              <p>以 Unity 與 Phaser 製作可遊玩的原型，關注操作手感、節奏與關卡體驗。</p>
+            </article>
+            <article class="skill-card reveal-card">
+              <span>02</span>
+              <h3>網頁介面</h3>
+              <p>使用 HTML、CSS、JavaScript 製作響應式介面，也能串接基礎後端功能。</p>
+            </article>
+            <article class="skill-card reveal-card">
+              <span>03</span>
+              <h3>互動裝置</h3>
+              <p>透過 TouchDesigner、MediaPipe 等工具，探索手勢控制與即時影像互動。</p>
+            </article>
+            <article class="skill-card reveal-card">
+              <span>04</span>
+              <h3>敘事設計</h3>
+              <p>從電影、影像與場景氛圍找靈感，把故事感融入遊戲與網站體驗。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="process section-band">
+        <div class="section-heading reveal">
+          <div>
+            <p class="eyebrow">Motion Rhythm</p>
+            <h2>這版先測三種動態節奏。</h2>
+          </div>
+          <p>如果方向對了，下一版就可以把文案、作品截圖、顏色與轉場細節修得更像真正要發佈的網站。</p>
+        </div>
+
+        <div class="process-list">
+          <article class="process-item reveal">
+            <strong>01</strong>
+            <h3>Hero 入場</h3>
+            <p>第一屏讓標題、文案與視覺分層進入，建立作品集的第一印象。</p>
+          </article>
+          <article class="process-item reveal">
+            <strong>02</strong>
+            <h3>水平作品軸</h3>
+            <p>桌機讓作品展示跟著滾動前進，像瀏覽一段可操作的作品時間軸。</p>
+          </article>
+          <article class="process-item reveal">
+            <strong>03</strong>
+            <h3>卡片批次浮現</h3>
+            <p>技能與分類作品用較輕的進場，避免所有元素同時跳出來。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="about section-band reveal">
+        <div>
+          <p class="eyebrow">About</p>
+          <h2>關於陳彥旭 fhcsij</h2>
+        </div>
+        <div class="about-copy">
+          <p>
+            我是多媒體設計系學生，也在累積遊戲開發與互動設計作品。偏好把問題拆解成規則、流程與體驗，再把它做成可以被操作、可以被測試的東西。
+          </p>
+          <p>
+            接下來會持續往遊戲開發前進，也保留後端與互動網頁作為能力延伸。這份原型可以當作之後真正個人網站的動態基礎。
+          </p>
+        </div>
+      </section>
+
+      <section class="contact section-band" id="contact">
+        <div class="reveal">
+          <p class="eyebrow">Contact</p>
+          <h2>如果這個方向有感覺，我們下一步就調成更像你的版本。</h2>
+        </div>
+        <div class="contact-actions reveal">
+          <a class="button primary" href="mailto:risingsun940506@gmail.com">risingsun940506@gmail.com</a>
+          <a class="button secondary" href="https://github.com/fhcsij">GitHub</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>© <span id="year"></span> 陳彥旭 fhcsij</span>
+      <a href="#top">回到頂端</a>
+    </footer>
+  </body>
+</html>

@@ -23,24 +23,11 @@
       "status": 404
     },
     {
-      "src": "/(Image|js|Sample)/(.*)",
-      "dest": "/TTL-deploy/$1/$2"
-    },
-    {
-      "src": "/style\\.css",
-      "dest": "/TTL-deploy/style.css"
-    },
-    {
-      "src": "/(about|appeal|buyer|buyer2|cart|complaint|donate|index|login|product_detail|product_list|register|seller|seller2|support)\\.html",
-      "dest": "/TTL-deploy/$1.html"
-    },
-    {
-      "src": "/",
-      "dest": "/TTL-deploy/index.html"
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "/TTL-deploy/$1"
+      "dest": "/index.html"
     }
   ]
 }
