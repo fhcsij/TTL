@@ -56,9 +56,17 @@ function get_db_connection(): mysqli
         (int) $config['port']
     );
 
-    if (!$conn->connect_error) {
-        $conn->set_charset('utf8mb4');
+    if ($conn->connect_errno || $conn->connect_error) {
+        http_response_code(500);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database connection failed. Check DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, and DB_PORT.',
+        ]);
+        exit;
     }
+
+    $conn->set_charset('utf8mb4');
 
     return $conn;
 }
