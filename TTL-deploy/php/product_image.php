@@ -19,6 +19,11 @@ if ($name === '') {
 
 $localPath = dirname(__DIR__) . '/Image/uploads/products/' . $name;
 if (is_file($localPath)) {
+    // Large restored images must be served by the static CDN, not a function.
+    if (filesize($localPath) > 4 * 1024 * 1024) {
+        header('Location: ../Image/uploads/products/' . rawurlencode($name), true, 302);
+        exit;
+    }
     ttl_send_image_file($localPath);
 }
 
