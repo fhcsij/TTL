@@ -4,6 +4,7 @@ ttl-vercel-export.tar
 TTL-deploy/twotimelight.sql
 TTL-deploy/php/config.local.php
 TTL-deploy/Image/uploads/*
+TTL-deploy/Image/restored-large/*
 !TTL-deploy/Image/uploads/default.png
 TTL-deploy/var/sessions/*
 !TTL-deploy/var/sessions/.gitkeep
