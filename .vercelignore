@@ -5,3 +5,8 @@ TTL-deploy/Image/uploads/*
 TTL-deploy/.DS_Store
 TTL-deploy/var/sessions/*
 !TTL-deploy/var/sessions/.gitkeep
+TTL-deploy/php/config.local.php
+.env*
+docs/
+scripts/
+tests/

@@ -38,4 +38,6 @@ DB_SSL
 DB_SSL_VERIFY
 ```
 
-另外，Vercel Functions 的檔案系統不適合永久保存使用者上傳圖片；公開 repo 也不提交 `Image/uploads` 中的使用者上傳資料，只保留預設頭像。若要讓頭像與商品圖片上傳在正式站穩定運作，需要改接外部儲存服務，例如 Supabase Storage 或 Vercel Blob。
+Vercel Functions 的檔案系統不適合永久保存上傳圖片或共用登入狀態。本專案的 MySQL 與 PostgreSQL 連線現在都會將商品圖片、頭像保存到資料庫；Vercel 的 MySQL Session 也使用資料庫。本機 MySQL 可設定 `DB_SESSION_STORAGE=database` 使用相同流程。
+
+零預算 TiDB Cloud Starter 的建立、資料搬移、TLS、環境變數與驗證步驟，請參閱根目錄的 [TiDB 遷移說明](../docs/TIDB_STARTER.md)。

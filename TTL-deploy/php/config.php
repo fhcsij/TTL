@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 mysqli_report(MYSQLI_REPORT_OFF);
+require_once __DIR__ . '/mysql_storage.php';
 
 function ttl_db_config(): array
 {
@@ -455,21 +456,26 @@ function get_db_connection()
         return get_pg_connection($config);
     }
 
-    $conn = mysqli_init();
+    $conn = new TTLMySQLConnection();
     if (!$conn instanceof mysqli) {
         ttl_database_error_response();
     }
 
     $flags = 0;
+    $conn->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
     if ($config['ssl']) {
         $conn->ssl_set(
             null,
             null,
-            $config['ssl_ca'] !== '' ? (string) $config['ssl_ca'] : null,
+            $config['ssl_ca'] !== '' ? (string) $config['ssl_ca'] : ttl_system_ca_path(),
             null,
             null
         );
         $flags |= MYSQLI_CLIENT_SSL;
+
+        if (defined('MYSQLI_OPT_SSL_VERIFY_SERVER_CERT')) {
+            $conn->options(MYSQLI_OPT_SSL_VERIFY_SERVER_CERT, $config['ssl_verify']);
+        }
 
         if (!$config['ssl_verify'] && defined('MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT')) {
             $flags |= MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT;
@@ -493,6 +499,22 @@ function get_db_connection()
     $conn->set_charset('utf8mb4');
 
     return $conn;
+}
+
+function ttl_system_ca_path(): ?string
+{
+    foreach ([
+        (string) ini_get('openssl.cafile'),
+        (string) ini_get('curl.cainfo'),
+        '/etc/ssl/certs/ca-certificates.crt',
+        '/etc/pki/tls/certs/ca-bundle.crt',
+        '/etc/ssl/cert.pem',
+    ] as $path) {
+        if ($path !== '' && is_readable($path)) {
+            return $path;
+        }
+    }
+    return null;
 }
 
 function get_pg_connection(array $config): TTLPostgresConnection
@@ -629,7 +651,7 @@ function ttl_store_product_upload($conn, ?array $file, string $prefix): array
     $extension = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
     $filename = uniqid($prefix, true) . '.' . $extension;
 
-    if ($conn instanceof TTLPostgresConnection) {
+    if ($conn instanceof TTLPostgresConnection || $conn instanceof TTLMySQLConnection) {
         $data = file_get_contents((string) $file['tmp_name']);
         if ($data === false) {
             return ['success' => false, 'message' => 'Unable to read uploaded image.'];
@@ -667,7 +689,7 @@ function ttl_store_avatar_upload($conn, ?array $file, int|string $userId): array
     $safeUserId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $userId);
     $filename = 'avatar_' . ($safeUserId !== '' ? $safeUserId : uniqid('', false)) . '.' . $extension;
 
-    if ($conn instanceof TTLPostgresConnection) {
+    if ($conn instanceof TTLPostgresConnection || $conn instanceof TTLMySQLConnection) {
         $data = file_get_contents((string) $file['tmp_name']);
         if ($data === false) {
             return ['success' => false, 'message' => 'Unable to read uploaded avatar.'];
@@ -720,6 +742,12 @@ function ttl_prepare_session_storage(): void
         } catch (Throwable $exception) {
             ttl_database_error_response();
         }
+    }
+
+    // Function instances cannot share their local session files.
+    if (getenv('VERCEL') === '1' || getenv('DB_SESSION_STORAGE') === 'database') {
+        session_set_save_handler(new TTLMySQLSessionHandler(get_db_connection()), true);
+        return;
     }
 
     if (ttl_session_path_is_writable((string) ini_get('session.save_path'))) {

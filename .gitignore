@@ -8,3 +8,6 @@ TTL-deploy/Image/uploads/*
 TTL-deploy/var/sessions/*
 !TTL-deploy/var/sessions/.gitkeep
 .DS_Store
+.env
+.env.local
+.env.production.local

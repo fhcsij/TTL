@@ -23,7 +23,7 @@ if (is_file($localPath)) {
 }
 
 $conn = get_db_connection();
-if ($conn instanceof TTLPostgresConnection) {
+if ($conn instanceof TTLPostgresConnection || $conn instanceof TTLMySQLConnection) {
     $image = $conn->getProductImage($name);
     if ($image !== null && is_string($image['data'] ?? null)) {
         $binary = base64_decode((string) $image['data'], true);
