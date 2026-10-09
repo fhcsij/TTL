@@ -502,9 +502,13 @@ function get_pg_connection(array $config): TTLPostgresConnection
 
 function ttl_pg_pdo(array $config): PDO
 {
+    if ((string) $config['ssl_ca'] === '' && $config['ssl'] && $config['ssl_verify']
+        && preg_match('/(^|\.)supabase\.(co|com)$/i', (string) $config['host'])) {
+        $config['ssl_ca'] = __DIR__ . '/certs/supabase-ca.crt';
+    }
     $sslMode = $config['ssl'] ? ($config['ssl_verify'] ? 'verify-full' : 'require') : 'prefer';
     $dsn = sprintf(
-        'pgsql:host=%s;port=%d;dbname=%s;sslmode=%s',
+        'pgsql:host=%s;port=%d;dbname=%s;sslmode=%s;connect_timeout=10',
         (string) $config['host'],
         (int) $config['port'],
         (string) $config['database'],
